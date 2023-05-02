@@ -5,115 +5,117 @@ import datetime
 def search_by_date(cursor):
     """function of a request to search data by date in table ev_info"""
 
-    while(1):
-        switch = int(input(
-            "\n1. Search by only year\n"
-            "2. Search by full date (year-month-day)\n"
-            "3. Finish the search by date\n"
-        ))
-        match switch:
-            case 1:
-                while (1):
-                    era = input('The year you want to enter AD or BC, please, write AD or BC\n')
-                    if era != 'AD' and era != 'BC' and era != 'ad' and era != 'bc':
-                        print("Incorrect input!\n")
-                    else:
-                        break
-                date = input('Write the year\n')
-                if len(date) == 1:
-                    search_q = f"select to_char(ev_date, 'YYYY-MM-DD'), description " \
-                               f"from ev_info where ev_date between symmetric" \
-                               f" '000{date}-01-01 {era}' and '000{date}-12-31 {era}';"
-                elif len(date)==2:
-                    search_q = f"select to_char(ev_date, 'YYYY-MM-DD'), description " \
-                               f"from ev_info where ev_date between symmetric" \
-                               f" '00{date}-01-01 {era}' and '00{date}-12-31 {era}';"
-                elif len(date) == 3:
-                    search_q = f"select to_char(ev_date, 'YYYY-MM-DD'), description " \
-                               f"from ev_info where ev_date between symmetric" \
-                               f" '0{date}-01-01 {era}' and '0{date}-12-31 {era}';"
-                elif len(date) == 4:
-                    search_q = f"select to_char(ev_date, 'YYYY-MM-DD'), description " \
-                               f"from ev_info where ev_date between symmetric" \
-                               f" '{date}-01-01 {era}' and '{date}-12-31 {era}';"
-            case 2:
-                while (1):
-                    era = input('The year you want to enter AD or BC, please, write AD or BC\n')
-                    if era != 'AD' and era != 'BC' and era != 'ad' and era != 'bc':
-                        print("Incorrect input!\n")
-                    else:
-                        break
-                date = input('Write the date you want in the year-month-date format, for example, 0035-06-09'
-                             '(pay attention to the zeros that are added to the year if it consists of less than 4 digits)\n')
-                date = datetime.datetime.strptime(date, '%Y-%m-%d')
-                date = date.date()
-                print(f"\nResult of request")
-                search_q = f"select to_char(ev_date, 'YYYY-MM-DD'), description from ev_info where ev_date = '{date} {era}';"
-            case 3:
-                break
-        cursor.execute(search_q)
-        for tuple in cursor.fetchall():
-            print(tuple)
-        print("----------------------------------")
-        enter = input("\nPress enter to continue, please\n")
+    switch = int(input(
+        "\n1. Search by only year\n"
+        "2. Search by full date (year-month-day)\n"
+        "3. Exit\n"
+    ))
+    match switch:
+        case 1:
+            while (1):
+                era = input('The year you want to enter AD or BC, please, write AD or BC\n')
+                if era != 'AD' and era != 'BC' and era != 'ad' and era != 'bc':
+                    print("Incorrect input!\n")
+                else:
+                    break
+            date = input('Write the year\n')
+            search_q = f"select to_char(ev_date, 'YYYY-MM-DD AD'), description " \
+                       f"from ev_info where ev_date between symmetric" \
+                       f" '{date.zfill(4)}-01-01 {era}' and '{date.zfill(4)}-12-31 {era}';"
+        case 2:
+            while (1):
+                era = input('The date you want to enter AD or BC, please, write AD or BC\n')
+                if era != 'AD' and era != 'BC' and era != 'ad' and era != 'bc':
+                    print("Incorrect input!\n")
+                else:
+                    break
+            date = input('Write the date you want in the year-month-date format, for example, 0035-06-09'
+                         '(pay attention to the zeros that are added to the year if it consists of less than 4 digits)\n')
+            date = datetime.datetime.strptime(date, '%Y-%m-%d')
+            date = date.date()
+            search_q = f"select to_char(ev_date, 'YYYY-MM-DD AD'), description from ev_info where ev_date = '{date} {era}';"
+        case 3:
+            return
+    print("\nResult of request\n")
+    cursor.execute(search_q)
+    for tuple in cursor.fetchall():
+        print(tuple)
+    print("----------------------------------")
+    enter = input("\nPress enter to continue, please\n")
 
 
 def search_by_date_range(cursor):
     """function of a request to search data by date range in table ev_info"""
 
-    while(1):
-        switch = int(input(
-            "\n1. Search between two years\n"
-            "2. Search between two full dates (year-month-day)\n"
-            "3. Finish the search by date range\n"
-        ))
-        match switch:
-            case 1:
-                while (1):
-                    era1 = input('The first year you want to enter AD or BC, please, write AD or BC\n')
-                    if era1 != 'AD' and era != 'BC' and era != 'ad' and era != 'bc':
-                        print("Incorrect input!\n")
-                    else:
-                        break
-                while (1):
-                    era1 = input('The first year you want to enter AD or BC, please, write AD or BC\n')
-                    if era1 != 'AD' and era != 'BC' and era != 'ad' and era != 'bc':
-                        print("Incorrect input!\n")
-                    else:
-                        break
-                date = input('Write the year\n')
-                if len(date) == 1:
-                    search_q = f"select * from ev_info where ev_date between symmetric" \
-                               f" '000{date}-01-01 {era}' and '000{date}-12-31 {era}';"
-                elif len(date)==2:
-                    search_q = f"select * from ev_info where ev_date between symmetric" \
-                               f" '00{date}-01-01 {era}' and '00{date}-12-31 {era}';"
-                elif len(date) == 3:
-                    search_q = f"select * from ev_info where ev_date between symmetric" \
-                               f" '0{date}-01-01 {era}' and '0{date}-12-31 {era}';"
-                elif len(date) == 4:
-                    search_q = f"select * from ev_info where ev_date between symmetric" \
-                               f" '{date}-01-01 {era}' and '{date}-12-31 {era}';"
-            case 2:
-                while (1):
-                    era = input('The year you want to enter AD or BC, please, write AD or BC\n')
-                    if era != 'AD' and era != 'BC' and era != 'ad' and era != 'bc':
-                        print("Incorrect input!\n")
-                    else:
-                        break
-                date = input('Write the date you want in the year-month-date format, for example, 0035-06-09'
-                             '(pay attention to the zeros that are added to the year if it consists of less than 4 digits)\n')
-                date = datetime.datetime.strptime(date, '%Y-%m-%d')
-                date = date.date()
-                print(f"\nResult of request")
-                search_q = f"select * from ev_info where ev_date = '{date} {era}';"
-            case 3:
-                break
-        cursor.execute(search_q)
-        for tuple in cursor.fetchall():
-            print(tuple)
-        print("----------------------------------")
-        enter = input("\nPress enter to continue, please\n")
+    switch = int(input(
+        "\n1. Search between two years\n"
+        "2. Search between two full dates (year-month-day)\n"
+        "3. Exit\n"
+    ))
+    match switch:
+        case 1:
+            while (1):
+                era1 = input('The first year you want to enter AD or BC, please, write AD or BC\n')
+                if era1 != 'AD' and era1 != 'BC' and era1 != 'ad' and era1 != 'bc':
+                    print("Incorrect input!\n")
+                else:
+                    break
+            date1 = input('Write the first year\n')
+            while (1):
+                era2 = input('The second year you want to enter AD or BC, please, write AD or BC\n')
+                if era2 != 'AD' and era2 != 'BC' and era2 != 'ad' and era2 != 'bc':
+                    print("Incorrect input!\n")
+                else:
+                    break
+            date2 = input('Write the second year (it will be included in the range)\n')
+            search_q = f"select to_char(ev_date, 'YYYY-MM-DD AD'), description " \
+                       f"from ev_info where ev_date between symmetric" \
+                       f" '{date1.zfill(4)}-01-01 {era1}' and '{date2.zfill(4)}-12-31 {era2}';"
+        case 2:
+            while (1):
+                era1 = input('The first date you want to enter AD or BC, please, write AD or BC\n')
+                if era1 != 'AD' and era1 != 'BC' and era1 != 'ad' and era1 != 'bc':
+                    print("Incorrect input!\n")
+                else:
+                    break
+            date1 = input('Write the first date you want in the year-month-date format, for example, 0035-06-09'
+                         '(pay attention to the zeros that are added to the year if it consists of less than 4 digits)\n')
+            date1 = datetime.datetime.strptime(date1, '%Y-%m-%d')
+            date1 = date1.date()
+            while (1):
+                era2 = input('The second date you want to enter AD or BC, please, write AD or BC\n')
+                if era2 != 'AD' and era2 != 'BC' and era2 != 'ad' and era2 != 'bc':
+                    print("Incorrect input!\n")
+                else:
+                    break
+            date2 = input('Write the second date you want in the year-month-date format, for example, 0035-06-09'
+                         '(pay attention to the zeros that are added to the year if it consists of less than 4 digits)\n')
+            date2 = datetime.datetime.strptime(date2, '%Y-%m-%d')
+            date2 = date2.date()
+            search_q = f"select to_char(ev_date, 'YYYY-MM-DD AD'), description " \
+                       f"from ev_info where ev_date between symmetric" \
+                       f"'{date1} {era1}' and '{date2} {era2}';"
+        case 3:
+            return
+    print(f"\nResult of request")
+    cursor.execute(search_q)
+    for tuple in cursor.fetchall():
+        print(tuple)
+    print("----------------------------------")
+    enter = input("\nPress enter to continue, please\n")
+
+
+def search_by_description(cursor):
+    string = input('Write the phrase or keywords that will be searched for\n')
+    search_q = f"select to_char(ev_date, 'YYYY-MM-DD AD'), description " \
+               f"from ev_info where " \
+               f"ts_description @@ plainto_tsquery('{string}');"
+    print(f"\nResult of request")
+    cursor.execute(search_q)
+    for tuple in cursor.fetchall():
+        print(tuple)
+    print("----------------------------------")
+    enter = input("\nPress enter to continue, please\n")
 
 
 def __main__():
@@ -131,21 +133,17 @@ def __main__():
                 switch = int(input(
                     "Select case you need, write only its number:\n1. Find the event(s) by date\n"
                     "2. Find the event(s) by date range\n"
-                    "3. Find the event(s) by description\n"
-                    "4. Insert into table bookings\n5. Update table tickets\n"
-                    "6. Update table bookings\n7. Delete from tickets"
-                    "\n8. Delete from bookings\n9. Exit\n"))
+                    "3. Find the event(s) by description\n4. Exit\n"))
                 match switch:
                     case 1:
                         search_by_date(cursor)
                     case 2:
                         search_by_date_range(cursor)
                     case 3:
-                        break
+                        search_by_description(cursor)
                     case 4:
                         break
-                    case 9:
-                        break
+
 
     except Exception as _ex:
         print("Error while working with PostgreSQL: ", _ex)
